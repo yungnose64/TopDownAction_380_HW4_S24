@@ -48,6 +48,21 @@ export default class HealerBehavior extends NPCBehavior  {
         /* ######### Add all healer actions ######## */
 
         // TODO configure the rest of the healer actions
+        let pickupHpack = new PickupItem(this, this.owner);
+        // console.log(pickupHpack);
+        pickupHpack.targets = scene.getHealthpacks();
+        pickupHpack.targetFinder = new BasicFinder<Item>(ClosestPositioned(this.owner), VisibleItemFilter(), ItemFilter(Healthpack));
+        pickupHpack.addPrecondition(HealerStatuses.HPACK_EXISTS);
+        pickupHpack.addEffect(HealerStatuses.HAS_HPACK);
+        pickupHpack.cost = 5;
+        this.addState(HealerActions.PICKUP_HPACK, new PickupItem(this, owner));
+
+        let useHpack = new UseHealthpack(this, owner);
+        useHpack.addPrecondition(HealerStatuses.ALLY_EXISTS);
+        useHpack.addPrecondition(HealerStatuses.HAS_HPACK);
+        useHpack.addEffect(HealerStatuses.GOAL);
+        useHpack.cost = 1;
+        this.addState(HealerActions.USE_HPACK, new UseHealthpack(this, owner));
 
         // Idle action
         let idle = new Idle(this, this.owner);
